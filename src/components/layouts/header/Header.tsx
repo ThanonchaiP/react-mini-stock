@@ -10,6 +10,9 @@ import { Badge } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
+import * as loginAction from "../../../actions/login.action";
+import { useDispatch } from "react-redux";
+
 const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
@@ -40,6 +43,7 @@ type HeaderProp = {
 
 export default function Header({ open, onDrawerOpen }: HeaderProp) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleDrawerOpen = () => {
     onDrawerOpen();
@@ -81,7 +85,7 @@ export default function Header({ open, onDrawerOpen }: HeaderProp) {
             aria-haspopup="true"
             color="inherit"
             onClick={() => {
-              navigate("/login");
+              dispatch(loginAction.logout(navigate));
             }}
           >
             <AccountCircle />

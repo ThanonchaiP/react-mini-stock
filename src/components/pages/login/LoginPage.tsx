@@ -1,11 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { Formik, FormikProps } from "formik";
-import { Box, Button, Card, CardContent, Stack, SxProps, TextField, Theme, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, CardContent, Stack, SxProps, TextField, Theme, Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { RootReducers } from "../../../reducers";
+import * as loginAction from "../../../actions/login.action";
 
 type Props = {};
 
 const LoginPage = (props: Props) => {
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const loginReducer = useSelector((state: RootReducers) => state.loginReducer);
+
   const classes: SxProps<Theme> | any = {
     root: { display: "flex", justifyContent: "center" },
   };
@@ -42,7 +49,7 @@ const LoginPage = (props: Props) => {
           <Button onClick={() => navigate("/register")} type="button" fullWidth variant="outlined">
             Register
           </Button>
-          <Button type="submit" fullWidth variant="contained" color="primary" disabled={isSubmitting}>
+          <Button type="submit" fullWidth variant="contained" color="primary" disabled={loginReducer.isFetching}>
             Login
           </Button>
         </Stack>
@@ -58,10 +65,10 @@ const LoginPage = (props: Props) => {
             <Typography gutterBottom variant="h5" component="h2">
               Login
             </Typography>
+            {loginReducer.isError && <Alert severity="error">Login Failed!!</Alert>}
             <Formik
-              onSubmit={(values, { setSubmitting }) => {
-                alert(JSON.stringify(values));
-                setSubmitting(false);
+              onSubmit={(values) => {
+                dispatch(loginAction.login(values, navigate));
               }}
               initialValues={{ username: "", password: "" }}
             >

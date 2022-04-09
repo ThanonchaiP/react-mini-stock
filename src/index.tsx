@@ -1,5 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom/client";
+import { createBrowserHistory } from "history";
 
 import "./index.css";
 import App from "./App";
@@ -17,7 +18,8 @@ if (true || process.env.REACT_APP_IS_PRODUCTION !== "1") {
   middlewares.push(logger);
 }
 
-const store = createStore(reducers, applyMiddleware(...middlewares));
+export const history = createBrowserHistory();
+export const store = createStore(reducers, applyMiddleware(...middlewares));
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(

@@ -27,6 +27,11 @@ router.post("/login", async (req, res) => {
 // Register
 router.post("/register", async (req, res) => {
   try {
+    let exist = await user.findOne({ where: { username: req.body.username } });
+    if(exist){
+      res.json({ result: constants.kResultNok, message: JSON.stringify('user is already!') });
+    }
+
     req.body.password = bcrypt.hashSync(req.body.password, 8);
     let result = await user.create(req.body);
     res.json({ result: constants.kResultOk, message: JSON.stringify(result) });

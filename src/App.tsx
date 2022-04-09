@@ -2,9 +2,11 @@ import * as React from "react";
 import { createTheme, styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/system";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Header from "./components/layouts/header/Header";
 import Menu from "./components/layouts/menu/Menu";
-import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "./components/pages/login/LoginPage";
 import RegisterPage from "./components/pages/register/RegisterPage";
 import StockPage from "./components/pages/stock/StockPage";
@@ -12,7 +14,10 @@ import StockCreate from "./components/pages/stock/create/StockCreate";
 import StockEdit from "./components/pages/stock/edit/StockEdit";
 import ReportPage from "./components/pages/report/ReportPage";
 import AboutUs from "./components/pages/about-us/AboutUs";
-import { ThemeProvider } from "@mui/system";
+import { RootReducers } from "./reducers";
+import * as loginAction from "./actions/login.action";
+import PublicRoutes from "./router/public.routes";
+import ProtectedRoutes from "./router/protected.routes";
 
 const drawerWidth = 240;
 
@@ -73,7 +78,9 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function App() {
+  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(true);
+  const loginReducer = useSelector((state: RootReducers) => state.loginReducer);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -83,24 +90,41 @@ export default function App() {
     setOpen(false);
   };
 
+  React.useEffect(() => {
+    dispatch(loginAction.restoreLogin());
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Header open={open} onDrawerOpen={handleDrawerOpen} />
-        <Menu open={open} onDrawerClose={handleDrawerClose} />
+        {loginReducer.result && (
+          <>
+            <Header open={open} onDrawerOpen={handleDrawerOpen} />
+            <Menu open={open} onDrawerClose={handleDrawerClose} />
+          </>
+        )}
         <Main open={open}>
           <DrawerHeader />
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/stock" element={<StockPage />} />
-            <Route path="/stock/create" element={<StockCreate />} />
-            <Route path="/stock/:id/edit" element={<StockEdit />} />
-            <Route path="/report" element={<ReportPage />} />
-            <Route path="/aboutus" element={<AboutUs />} />
-            <Route path="/" element={<Navigate to="/login" />} />
-            <Route path="*" element={<PageNotFound />} />
+            {/* Public Routes */}
+            <Route path="/" element={<PublicRoutes />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            </Route>
+
+            {/* Protected Routes */}
+            <Route path="/" element={<ProtectedRoutes />}>
+              <Route path="/stock" element={<StockPage />} />
+              <Route path="/stock/create" element={<StockCreate />} />
+              <Route path="/stock/:id/edit" element={<StockEdit />} />
+              <Route path="/report" element={<ReportPage />} />
+              <Route path="/aboutus" element={<AboutUs />} />
+              <Route path="/" element={<Navigate to="/login" />} />
+              <Route path="*" element={<PageNotFound />} />
+            </Route>
           </Routes>
         </Main>
       </Box>

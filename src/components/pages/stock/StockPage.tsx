@@ -4,7 +4,14 @@ type Props = {}
 
 const StockPage = (props: Props) => {
   return (
-    <div>StockPage</div>
+    <>
+      <ul>
+        <li>Angular</li>
+        <li>Angular</li>
+        <li>Angular</li>
+        <li>Angular</li>
+      </ul>
+    </>
   )
 }
 
