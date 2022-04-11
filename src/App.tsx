@@ -113,17 +113,17 @@ export default function App() {
             <Route path="/" element={<PublicRoutes />}>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/" element={<Navigate to="/login" />} />
+              <Route path="*" element={<PageNotFound />} />
             </Route>
 
             {/* Protected Routes */}
             <Route path="/" element={<ProtectedRoutes />}>
               <Route path="/stock" element={<StockPage />} />
               <Route path="/stock/create" element={<StockCreate />} />
-              <Route path="/stock/:id/edit" element={<StockEdit />} />
+              <Route path="/stock/edit/:id" element={<StockEdit />} />
               <Route path="/report" element={<ReportPage />} />
               <Route path="/aboutus" element={<AboutUs />} />
-              <Route path="/" element={<Navigate to="/login" />} />
-              <Route path="*" element={<PageNotFound />} />
             </Route>
           </Routes>
         </Main>

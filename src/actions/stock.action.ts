@@ -56,13 +56,6 @@ export const addProduct = (formData: FormData) => {
   };
 };
 
-export const updateProduct = (formData: FormData) => {
-  return async (dispatch: any) => {
-    await httpClient.put(server.PRODUCT_URL, formData);
-    history.back();
-  };
-};
-
 export const getProductById = (id: any) => {
   return async (dispatch: any) => {
     try {

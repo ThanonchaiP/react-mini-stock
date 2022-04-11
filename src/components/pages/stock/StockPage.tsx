@@ -3,111 +3,29 @@ import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import NumberFormat from "react-number-format";
 import Moment from "react-moment";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Fab, IconButton, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Fab,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Add, Clear, Search } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDebounce, useDebounceCallback } from "@react-hook/debounce";
 import { imageUrl } from "../../../Constants";
 import { RootReducers } from "../../../reducers";
-import * as stockAction from "../../../actions/stock.action";
-
-const stockColumns: GridColDef[] = [
-  {
-    headerName: "ID",
-    field: "id",
-    width: 50,
-  },
-  {
-    headerName: "IMG",
-    field: "image",
-    width: 80,
-    renderCell: ({ value }: GridRenderCellParams<string>) => (
-      <img
-        src={`${imageUrl}/images/${value}?dummy=${Math.random()}`}
-        alt=""
-        style={{ width: 70, height: 70, borderRadius: "5%" }}
-      />
-    ),
-  },
-  {
-    headerName: "NAME",
-    field: "name",
-    width: 400,
-  },
-  {
-    headerName: "STOCK",
-    width: 120,
-    field: "stock",
-    renderCell: ({ value }: GridRenderCellParams<string>) => (
-      <Typography variant="body1">
-        <NumberFormat
-          value={value}
-          displayType={"text"}
-          thousandSeparator={true}
-          decimalScale={0}
-          fixedDecimalScale={true}
-        />
-      </Typography>
-    ),
-  },
-  {
-    headerName: "PRICE",
-    field: "price",
-    width: 120,
-    renderCell: ({ value }: GridRenderCellParams<string>) => (
-      <Typography variant="body1">
-        <NumberFormat
-          value={value}
-          displayType={"text"}
-          thousandSeparator={true}
-          decimalScale={2}
-          fixedDecimalScale={true}
-          prefix={"฿ "}
-        />
-      </Typography>
-    ),
-  },
-  {
-    headerName: "TIME",
-    field: "createdAt",
-    width: 220,
-    renderCell: ({ value }: GridRenderCellParams<string>) => (
-      <Typography variant="body1">
-        <Moment format="DD/MM/YYYY HH:mm">{value}</Moment>
-      </Typography>
-    ),
-  },
-  {
-    headerName: "ACTION",
-    field: ".",
-    width: 120,
-    renderCell: ({ row }: GridRenderCellParams<string>) => (
-      <Stack direction="row">
-        <IconButton
-          aria-label="edit"
-          size="large"
-          onClick={() => {
-            // navigate("/stock/edit/" + row.id);
-          }}
-        >
-          <EditIcon fontSize="inherit" />
-        </IconButton>
-        <IconButton
-          aria-label="delete"
-          size="large"
-          onClick={() => {
-            // setSelectedProduct(row);
-            // setOpenDialog(true);
-          }}
-        >
-          <DeleteIcon fontSize="inherit" />
-        </IconButton>
-      </Stack>
-    ),
-  },
-];
+import * as stockActions from "../../../actions/stock.action";
+import { Product } from "../../../types/product.type";
 
 interface QuickSearchToolbarProps {
   clearSearch: () => void;
@@ -176,18 +94,157 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
 }
 
 export default function StockPage() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const stockReducer = useSelector((state: RootReducers) => state.stockReducer);
   const [keywordSearch, setKeywordSearch] = useDebounce<string>("", 500);
   const [keywordSearchNoDelay, setKeywordSearchNoDelay] = React.useState<string>("");
+  const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    dispatch(stockAction.loadStockByKeyword(keywordSearch));
+    dispatch(stockActions.loadStockByKeyword(keywordSearch));
   }, [keywordSearch]);
 
   React.useEffect(() => {
-    dispatch(stockAction.loadStock());
+    dispatch(stockActions.loadStock());
   }, []);
+
+  const handleDeleteConfirm = () => {
+    dispatch(stockActions.deleteProduct(String(selectedProduct!.id!)));
+    setOpenDialog(false);
+  };
+
+  const stockColumns: GridColDef[] = [
+    {
+      headerName: "ID",
+      field: "id",
+      width: 50,
+    },
+    {
+      headerName: "IMG",
+      field: "image",
+      width: 80,
+      renderCell: ({ value }: GridRenderCellParams<string>) => (
+        <img
+          src={`${imageUrl}/images/${value}?dummy=${Math.random()}`}
+          alt=""
+          style={{ width: 70, height: 70, borderRadius: "5%" }}
+        />
+      ),
+    },
+    {
+      headerName: "NAME",
+      field: "name",
+      width: 400,
+    },
+    {
+      headerName: "STOCK",
+      width: 120,
+      field: "stock",
+      renderCell: ({ value }: GridRenderCellParams<string>) => (
+        <Typography variant="body1">
+          <NumberFormat
+            value={value}
+            displayType={"text"}
+            thousandSeparator={true}
+            decimalScale={0}
+            fixedDecimalScale={true}
+          />
+        </Typography>
+      ),
+    },
+    {
+      headerName: "PRICE",
+      field: "price",
+      width: 120,
+      renderCell: ({ value }: GridRenderCellParams<string>) => (
+        <Typography variant="body1">
+          <NumberFormat
+            value={value}
+            displayType={"text"}
+            thousandSeparator={true}
+            decimalScale={2}
+            fixedDecimalScale={true}
+            prefix={"฿ "}
+          />
+        </Typography>
+      ),
+    },
+    {
+      headerName: "TIME",
+      field: "createdAt",
+      width: 220,
+      renderCell: ({ value }: GridRenderCellParams<string>) => (
+        <Typography variant="body1">
+          <Moment format="DD/MM/YYYY HH:mm">{value}</Moment>
+        </Typography>
+      ),
+    },
+    {
+      headerName: "ACTION",
+      field: ".",
+      width: 120,
+      renderCell: ({ row }: GridRenderCellParams<string>) => (
+        <Stack direction="row">
+          <IconButton
+            aria-label="edit"
+            size="large"
+            onClick={() => {
+              navigate("/stock/edit/" + row.id);
+            }}
+          >
+            <EditIcon fontSize="inherit" />
+          </IconButton>
+          <IconButton
+            aria-label="delete"
+            size="large"
+            onClick={() => {
+              setSelectedProduct(row);
+              setOpenDialog(true);
+            }}
+          >
+            <DeleteIcon fontSize="inherit" />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
+
+  const showDialog = () => {
+    if (selectedProduct === null) {
+      return "";
+    }
+
+    return (
+      <Dialog
+        open={openDialog}
+        keepMounted
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle id="alert-dialog-slide-title">
+          <img
+            src={`${imageUrl}/images/${selectedProduct.image}?dummy=${Math.random()}`}
+            style={{ width: 100, borderRadius: "5%" }}
+          />
+          <br />
+          Confirm to delete the product? : {selectedProduct.name}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">You cannot restore deleted product.</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="info">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
 
   return (
     <Box>
@@ -214,6 +271,7 @@ export default function StockPage() {
           rowsPerPageOptions={[5]}
         />
       )}
+      {showDialog()}
     </Box>
   );
 }
