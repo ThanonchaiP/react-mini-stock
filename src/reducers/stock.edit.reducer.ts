@@ -13,7 +13,7 @@ const initialState: StockEditState = {
   isError: false,
 };
 
-export default (state = initialState, { type, payload }: any) => {
+const StockEditReducer = (state = initialState, { type, payload }: any) => {
   switch (type) {
     case STOCK_EDIT_FETCHING:
       return { ...state, result: null, isFetching: true, isError: false };
@@ -25,3 +25,5 @@ export default (state = initialState, { type, payload }: any) => {
       return state;
   }
 };
+
+export default StockEditReducer;

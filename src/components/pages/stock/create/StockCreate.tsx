@@ -56,14 +56,7 @@ const StockCreate = (props: Props) => {
             </div>
           </CardContent>
           <CardActions>
-            <Button
-              disabled={isSubmitting}
-              fullWidth
-              variant="contained"
-              color="primary"
-              type="submit"
-              sx={{ marginRight: 1 }}
-            >
+            <Button disabled={isSubmitting} fullWidth variant="contained" color="primary" type="submit" sx={{ marginRight: 1 }}>
               Create
             </Button>
             <Button component={Link} to="/stock" variant="outlined" fullWidth>
@@ -102,7 +95,7 @@ const StockCreate = (props: Props) => {
           setSubmitting(false);
         }}
       >
-        {(props: any) => showForm(props)}
+        {(props) => showForm(props)}
       </Formik>
     </Box>
   );

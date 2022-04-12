@@ -1,11 +1,11 @@
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { Button, ButtonGroup, IconButton, Paper } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "chart.js/auto";
 import { Chart } from "react-chartjs-2";
 
-export default () => {
+const ReportPage = () => {
   const [chartType, setChartType] = useState<string>("bar");
   const [chartData1, setChartData1] = useState([]);
   const [chartData2, setChartData2] = useState([]);
@@ -140,3 +140,5 @@ export default () => {
     </Paper>
   );
 };
+
+export default ReportPage;

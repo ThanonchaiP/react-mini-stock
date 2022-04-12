@@ -26,9 +26,9 @@ const StockEditPage: React.FC<any> = () => {
 
   const showPreviewImage = (values: any) => {
     if (values.file_obj) {
-      return <img src={values.file_obj} style={{ height: 150 }} />;
+      return <img src={values.file_obj} style={{ height: 150 }} alt="" />;
     } else if (values.image) {
-      return <img src={`${imageUrl}/images/${values.image}`} style={{ height: 150 }} />;
+      return <img src={`${imageUrl}/images/${values.image}`} style={{ height: 150 }} alt="" />;
     }
   };
 
@@ -50,7 +50,7 @@ const StockEditPage: React.FC<any> = () => {
             <div style={{ margin: 16 }}>{showPreviewImage(values)}</div>
 
             <div>
-              <img src={`${process.env.PUBLIC_URL}/images/ic_photo.png`} style={{ width: 25, height: 20 }} />
+              <img src={`${process.env.PUBLIC_URL}/images/ic_photo.png`} style={{ width: 25, height: 20 }} alt="" />
               <span style={{ color: "#00B0CD", marginLeft: 10 }}>Add Picture</span>
 
               <input

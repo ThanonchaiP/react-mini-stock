@@ -3,29 +3,17 @@ import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import NumberFormat from "react-number-format";
 import Moment from "react-moment";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Fab,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Fab, IconButton, Stack, TextField, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Add, Clear, Search } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
-import { useDebounce, useDebounceCallback } from "@react-hook/debounce";
+import { useDebounce } from "@react-hook/debounce";
 import { imageUrl } from "../../../Constants";
 import { RootReducers } from "../../../reducers";
 import * as stockActions from "../../../actions/stock.action";
 import { Product } from "../../../types/product.type";
+import DeleteDialog from "./_dialog/DeleteDialog";
 
 interface QuickSearchToolbarProps {
   clearSearch: () => void;
@@ -115,6 +103,11 @@ export default function StockPage() {
     setOpenDialog(false);
   };
 
+  const deleteDialog = (product: Product) => {
+    setSelectedProduct(product);
+    setOpenDialog(true);
+  };
+
   const stockColumns: GridColDef[] = [
     {
       headerName: "ID",
@@ -196,55 +189,13 @@ export default function StockPage() {
           >
             <EditIcon fontSize="inherit" />
           </IconButton>
-          <IconButton
-            aria-label="delete"
-            size="large"
-            onClick={() => {
-              setSelectedProduct(row);
-              setOpenDialog(true);
-            }}
-          >
+          <IconButton aria-label="delete" size="large" onClick={() => deleteDialog(row)}>
             <DeleteIcon fontSize="inherit" />
           </IconButton>
         </Stack>
       ),
     },
   ];
-
-  const showDialog = () => {
-    if (selectedProduct === null) {
-      return "";
-    }
-
-    return (
-      <Dialog
-        open={openDialog}
-        keepMounted
-        aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle id="alert-dialog-slide-title">
-          <img
-            src={`${imageUrl}/images/${selectedProduct.image}?dummy=${Math.random()}`}
-            style={{ width: 100, borderRadius: "5%" }}
-          />
-          <br />
-          Confirm to delete the product? : {selectedProduct.name}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">You cannot restore deleted product.</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="info">
-            Cancel
-          </Button>
-          <Button onClick={handleDeleteConfirm} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  };
 
   return (
     <Box>
@@ -268,10 +219,16 @@ export default function StockPage() {
           rows={stockReducer.result}
           columns={stockColumns}
           pageSize={10}
-          rowsPerPageOptions={[5]}
+          rowsPerPageOptions={[10]}
         />
       )}
-      {showDialog()}
+
+      <DeleteDialog
+        openDialog={openDialog}
+        setOpenDialog={setOpenDialog}
+        selectedProduct={selectedProduct}
+        handleDeleteConfirm={handleDeleteConfirm}
+      />
     </Box>
   );
 }

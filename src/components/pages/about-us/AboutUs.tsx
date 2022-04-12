@@ -2,10 +2,6 @@ import { Paper } from "@mui/material";
 import * as React from "react";
 import Iframe from "react-iframe";
 
-type AboutUsProps = {
-  //
-};
-
 const AboutUs: React.FC<any> = () => {
   return (
     <Paper sx={{ height: "86vh" }}>
