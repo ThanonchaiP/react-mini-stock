@@ -94,9 +94,9 @@ export default function StockPage() {
     dispatch(stockActions.loadStockByKeyword(keywordSearch));
   }, [keywordSearch]);
 
-  React.useEffect(() => {
-    dispatch(stockActions.loadStock());
-  }, []);
+  // React.useEffect(() => {
+  //   dispatch(stockActions.loadStock());
+  // }, []);
 
   const handleDeleteConfirm = () => {
     dispatch(stockActions.deleteProduct(String(selectedProduct!.id!)));
